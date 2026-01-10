@@ -1,0 +1,10 @@
+{
+    "lesson_1": {
+        "title": "The Gates of Syntax",
+        "story_intro": "You stand before the massive stone Gates of Syntax. To pass, you must prove you can store information.",
+        "lesson_text": "In Python, we use 'variables' to store data. Example: name = 'Hero'",
+        "challenge_objective": "Create a variable named 'player_name' and set it to your own name.",
+        "success_node": "The gates grind open! Welcome, {player_name}. You have mastered the first fundamental.",
+        "error_hint": "Make sure you typed 'player_name' correctly and used quotation marks for your name!"
+    }
+}

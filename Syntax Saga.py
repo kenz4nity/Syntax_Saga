@@ -32,7 +32,7 @@ class SyntaxSagaApp(ctk.CTk):
         self.drafts_file = os.path.join(base_dir, "user_drafts.json")
         self.progress_file = os.path.join(base_dir, "user_progress.json")
 
-        self.title("Syntax Saga - Final Polish")
+        self.title("Syntax Saga")
         self.geometry("1200x800")
         self.configure(fg_color=COLOR_BG) 
         self.grid_columnconfigure(1, weight=1)

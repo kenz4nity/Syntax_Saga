@@ -14,11 +14,11 @@
         "error_hint": "In this Tower, words are powerful. Make sure  'print' is in lowercase and the message must be wrapped in 'quotes' inside the parentheses. "
     },
 
-        "Lesson 1: The Syntax": {
+       "Lesson 1: The Syntax": {
         "title": "First step into the Tower: Indentation",
         "reading": "As you take your first step, you are greeted with a large door with engravings of strange symbols. This is the Syntax Door, the stepping stone to mastering Python. On the Introduction of Python, you learned that Python's syntax can be executed by writing directly on the Command Line and now we will learn the importance of indentation in Python. Indentation is the way we structure our code to show which parts belong together. In Python, indentation is not just for readability; it is a fundamental part of the syntax itself. Blocks of code are defined by their indentation level, and this is crucial for defining functions, loops, and conditionals.",
         "challenge_objective": "To open the Syntax Door, you must declare your name and attack. Type:\nname = 'your_own_name'\nattack = 5\nprint(f'Hello, Tower! I am {name}')\nif attack > 0:\n    print('The door opens!')",
-        "expected_output": "Hello, Tower! I am {name}. The door opens!",
+        "expected_output": "Hello, Tower! I am your_own_name\nThe door opens!",
         "success_msg": "The Syntax Door creaks open, revealing the path ahead. You have mastered the art of indentation!",
         "error_hint": "Remember, in Python, indentation is the key! Make sure the print statement after the if condition is indented properly."
     },

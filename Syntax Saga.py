@@ -32,7 +32,7 @@ class SyntaxSagaApp(ctk.CTk):
         self.drafts_file = os.path.join(base_dir, "user_drafts.json")
         self.progress_file = os.path.join(base_dir, "user_progress.json")
 
-        self.title("Syntax Saga - Final Fixed")
+        self.title("Syntax Saga - Final Polish")
         self.geometry("1200x800")
         self.configure(fg_color=COLOR_BG) 
         self.grid_columnconfigure(1, weight=1)
@@ -40,7 +40,7 @@ class SyntaxSagaApp(ctk.CTk):
 
         self.setup_ui()
         
-        # Start at Lessons Menu
+        # Start at Lessons Menu so the button is hidden initially
         self.show_lessons()
 
     def setup_ui(self):
@@ -90,8 +90,8 @@ class SyntaxSagaApp(ctk.CTk):
 
     def load_content(self, mode, key):
         self.engine.set_mode(mode, key)
-        self.show_editor() 
-        # Note: show_editor() now calls update_editor_instructions() automatically
+        self.show_editor()
+        self.update_editor_instructions()
 
     def update_editor_instructions(self):
         content = self.engine.get_current_content()
@@ -105,16 +105,14 @@ class SyntaxSagaApp(ctk.CTk):
         
         # --- DYNAMIC BUTTON LOGIC ---
         if self.engine.mode == "challenge":
-            # Boss Mode: Hide Next Button
+            # Hide Next Button in Challenges
             self.btn_next.pack_forget()
             self.lbl_status.configure(text=f"⚔️ BOSS FIGHT: {title}", text_color=COLOR_CHALLENGE)
             self.input_box.configure(border_color=COLOR_CHALLENGE, border_width=2)
         else:
-            # Lesson Mode: Show Next Button
-            # We pack it ONLY if it's not already there
+            # Show Next Button ONLY in Lessons
             if not self.btn_next.winfo_ismapped():
                 self.btn_next.pack(side="right", padx=10, pady=5)
-            
             self.lbl_status.configure(text=f"Current Objective: {title}", text_color="white")
             self.input_box.configure(border_color="black", border_width=2)
 
@@ -141,9 +139,9 @@ class SyntaxSagaApp(ctk.CTk):
                 self.lbl_status.configure(text="You have completed all lessons!", text_color="gold")
         except: pass
 
-    # --- VIEW NAVIGATION ---
+    # --- VIEW NAVIGATION (Hiding Button Logic) ---
     def hide_all(self): 
-        # Always hide the NEXT button when switching views
+        # Always hide the NEXT button when switching main tabs
         self.btn_next.pack_forget()
         for f in [self.frame_lessons, self.frame_challenges, self.frame_drafts, self.frame_editor, self.frame_progress]: 
             f.grid_forget()
@@ -151,8 +149,8 @@ class SyntaxSagaApp(ctk.CTk):
     def show_editor(self): 
         self.hide_all()
         self.frame_editor.grid(row=0, column=0, sticky="nsew")
-        # FIX: We MUST call this to restore the button if we are in Lesson Mode
-        self.update_editor_instructions()
+        # NOTE: We don't show the button here directly. 
+        # update_editor_instructions() will decide if it should be shown based on the mode.
 
     def show_lessons(self): 
         self.hide_all()

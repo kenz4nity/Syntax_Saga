@@ -43,3 +43,12 @@ class AdventureEngine:
             return True
         return False # No more lessons available
        
+
+#logic for testing the engine
+if __name__ == "__main__":
+    engine = AdventureEngine()
+    print(f"Current Floor: {engine.get_current_lesson().get('title')}")
+    
+    # Test a "Boss Gate" answer
+    success, message = engine.check_answer("I accept the challenge")
+    print(f"Success: {success} | Message: {message}")

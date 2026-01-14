@@ -1,3 +1,5 @@
+from System_Integrator import SystemIntegrator
+
 import customtkinter as ctk
 import sys
 import io
@@ -27,7 +29,8 @@ ctk.set_default_color_theme("dark-blue")
 class SyntaxSagaApp(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.engine = AdventureEngine()
+        self.integrator = SystemIntegrator()
+        self.engine = self.integrator.engine
         
         base_dir = os.path.dirname(os.path.abspath(__file__))
         self.drafts_file = os.path.join(base_dir, "user_drafts.json")
@@ -198,29 +201,22 @@ class SyntaxSagaApp(ctk.CTk):
 
     # --- RUN LOGIC ---
     def run_code_logic(self):
-        self.show_editor()
+        self.show_editor() # Ensures the editor is visible
         user_code = self.input_box.get("1.0", "end").strip()
-        old_stdout = sys.stdout; redirected_output = io.StringIO(); sys.stdout = redirected_output; runtime_error = None
-        try: exec(user_code, globals()) 
-        except Exception as e: runtime_error = str(e)
-        sys.stdout = old_stdout; captured_output = redirected_output.getvalue()
+        
+        # This is where your new System Integrator does the heavy lifting:
+        output_text, success, message = self.integrator.execute_code(user_code)
 
         self.output_box.delete("1.0", "end")
-        if runtime_error:
-            self.output_box.insert("end", f"Runtime Error:\n{runtime_error}")
-            actual_result = "ERROR"
-        else:
-            self.output_box.insert("end", captured_output)
-            actual_result = captured_output.strip()
-
-        is_correct, message = self.engine.check_answer(actual_result)
+        self.output_box.insert("end", output_text)
         
-        if is_correct:
-            self.lbl_status.configure(text=f"✅ SUCCESS: {message}", text_color="#00FF00")
-            if self.engine.mode == "lesson" and self.engine.current_key:
-                self.mark_lesson_complete(self.engine.current_key)
+        if success:
+             self.lbl_status.configure(text=f"✅ {message}", text_color="#00FF00")
+             # If it's a lesson, we still need to tell the UI to unlock the next one
+             if self.engine.mode == "lesson": 
+                 self.mark_lesson_complete(self.engine.current_key)
         else:
-            self.lbl_status.configure(text=f"❌ FAILED: {message}", text_color="#FF5555")
+             self.lbl_status.configure(text=f"❌ {message}", text_color="#FF5555")
 
     # --- SAVE/LOAD ---
     def get_completed_lessons(self):

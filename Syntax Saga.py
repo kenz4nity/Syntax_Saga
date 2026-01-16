@@ -330,7 +330,10 @@ class SyntaxSagaApp(ctk.CTk):
         except: pass
 
     # --- UI HELPERS ---
-    def on_key_release(self, event=None): self.highlight_syntax()
+    def on_key_release(self, event=None):
+        self.highlight_syntax()
+        self.check_code_live()
+
     def highlight_syntax(self):
         text_widget = self.input_box._textbox
         full_text = text_widget.get("1.0", "end")
@@ -428,6 +431,50 @@ class SyntaxSagaApp(ctk.CTk):
         self.lbl_status = ctk.CTkLabel(bottom_panel, text="Ready", font=("Arial", 14, "bold"), anchor="w", text_color="white"); self.lbl_status.pack(fill="x", padx=10, pady=5)
         self.lbl_story = ctk.CTkTextbox(bottom_panel, fg_color="transparent", text_color="white", wrap="word", font=("Arial", 12)); self.lbl_story.pack(fill="both", expand=True, padx=10, pady=5)
         return frame
+
+    def check_code_live(self):
+        """Real-time code analysis and execution as user types"""
+        user_code = self.input_box.get("1.0", "end").strip()
+        
+        if not user_code:
+            self.lbl_status.configure(text="Ready", text_color="white")
+            self.output_box.delete("1.0", "end")
+            return
+        
+        try:
+            # Parse the code to check for syntax errors
+            ast.parse(user_code)
+            self.lbl_status.configure(text="✅ Code looks valid - Auto-executing...", text_color="#00FF00")
+            
+            # Execute the code and show output in real-time
+            output_text, success, message = self.integrator.execute_code(user_code)
+            
+            self.output_box.delete("1.0", "end")
+            self.output_box.insert("end", output_text)
+            
+            if success:
+                self.lbl_status.configure(text=f"✅ {message}", text_color="#00FF00")
+            else:
+                self.lbl_status.configure(text=f"⚠️ {message}", text_color="#FFAA00")
+                
+        except SyntaxError as e:
+            # Show syntax error
+            error_msg = f"⚠️ Line {e.lineno}: {e.msg}" if e.lineno else f"⚠️ {e.msg}"
+            self.lbl_status.configure(text=error_msg, text_color="#FF5555")
+            
+            # Show detailed error in output box
+            self.output_box.delete("1.0", "end")
+            error_detail = f"Syntax Error on Line {e.lineno}\n{e.msg}\n"
+            if e.text:
+                error_detail += f"\nCode: {e.text.strip()}\n"
+                if e.offset:
+                    error_detail += f"      {' ' * (e.offset - 1)}^\n"
+            self.output_box.insert("end", error_detail)
+            
+        except Exception as e:
+            self.lbl_status.configure(text=f"⚠️ Error: {str(e)}", text_color="#FF5555")
+            self.output_box.delete("1.0", "end")
+            self.output_box.insert("end", f"Error: {str(e)}")
     
 
 if __name__ == "__main__":

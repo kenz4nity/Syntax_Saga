@@ -42,6 +42,8 @@ COLOR_KEYWORD       = "#FF007F"  # Neon Rose
 COLOR_STRING        = "#FFD700"  # Gold / Amber
 COLOR_BUILTIN       = "#BD93F9"  # Soft Violet
 
+MAX_FILE_SIZE = 1024 * 1024  # 1MB limit
+
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
 
@@ -304,14 +306,22 @@ class SyntaxSagaApp(ctk.CTk):
         self.highlight_syntax()
         self.lbl_status.configure(text="Draft Loaded", text_color="#4B7BE5")
 
+
     def open_file(self):
-        self.show_editor()
-        file_path = filedialog.askopenfilename(filetypes=[("Python Files", "*.py"), ("Text Files", "*.txt")])
+        file_path = filedialog.askopenfilename(...)
         if file_path:
-            with open(file_path, "r") as f:
-                self.input_box.delete("1.0", "end")
+            # Check file size
+            if os.path.getsize(file_path) > MAX_FILE_SIZE:
+                self.lbl_status.configure(text="File too large!", text_color="red")
+                return
+            
+            # Validate file extension
+            if not file_path.endswith(('.py', '.txt')):
+                self.lbl_status.configure(text="Invalid file type!", text_color="red")
+                return
+            
+            with open(file_path, "r", encoding='utf-8') as f:
                 self.input_box.insert("1.0", f.read())
-                self.highlight_syntax()
 
     # --- PHASE 9: DELETE LOGIC ---
     def delete_draft(self, index):

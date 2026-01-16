@@ -56,7 +56,36 @@ class SystemIntegrator:
 
         # 2. Execute Code
         try:
-            exec(user_code, globals())
+            safe_globals = {
+                        '__builtins__': {
+                            'print': print,
+                            'len': len,
+                            'range': range,
+                            'int': int,
+                            'str': str,
+                            'float': float,
+                            'bool': bool,
+                            'list': list,
+                            'dict': dict,
+                            'tuple': tuple,
+                            'set': set,
+                            'abs': abs,
+                            'min': min,
+                            'max': max,
+                            'sum': sum,
+                            'round': round,
+                            'type': type,
+                            'isinstance': isinstance,
+                            'True': True,
+                            'False': False,
+                            'None': None,
+                        },
+                        # This allows f-strings to work
+                        '__name__': '__main__',
+                        '__doc__': None,
+                    }
+            safe_locals = {}
+            exec(user_code, safe_globals, safe_locals)
         except Exception as e:
             runtime_error = str(e)
         

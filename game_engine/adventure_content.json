@@ -1,0 +1,58 @@
+{
+    "Introduction to Python": {
+        "title": "THE AWAKENING: THE ORIGIN OF PYTHON",
+        "reading": "Welcome Coder! You have entered the Tower of Python, a realm created by Guido van Rossum in 1991. This language is a 'Universal Key' to build vast Web Applications, complex Software Engines and solve the hidden Mysteries of Mathematics. By climbing the tower, you will find the simplest path towards enlightenment as Python has a syntax as clear as the mortals universal English Tounge, allowing you to cast powerful spells with fewer lines of code than any other language.",
+        "capabilities": [
+            "Constructing Web Applications on ancient servers",
+            "Reading and Modifying Forbidden Files(Databases)",
+            "Handling the Weight of Big Data",
+            "Rapid Prototyping of new inventions"
+        ],
+        "challenge_objective": "If you are ready to begin your journey, you must accept the Tower's creator invitation. Type: print('I accept the challenge') to proceed.",
+        "expected_output": "I accept the challenge",
+        "success_msg": "Analyzing... Synchronizing with the Python Core.... Welcome to the Tower of Python, Adventurer!",
+        "error_hint": "In this Tower, words are powerful. Make sure  'print' is in lowercase and the message must be wrapped in 'quotes' inside the parentheses. "
+    },
+
+       "Lesson 1: The Syntax": {
+        "title": "FIRST STEP INTO THE TOWER: INDENTATION",
+        "reading": "As you take your first step, you are greeted with a large door with engravings of strange symbols. This is the Syntax Door, the stepping stone to mastering Python. On the Introduction of Python, you learned that Python's syntax can be executed by writing directly on the Command Line and now we will learn the importance of indentation in Python. Indentation is the way we structure our code to show which parts belong together. In Python, indentation is not just for readability; it is a fundamental part of the syntax itself. Blocks of code are defined by their indentation level, and this is crucial for defining functions, loops, and conditionals.",
+        "challenge_objective": "To open the Syntax Door, you must declare your name and attack. Type:\nname = 'your_own_name'\nattack = 5\nprint(f'Hello, Tower! I am {name}')\nif attack > 0:\n    print('The door opens!')",
+        "expected_output": "Hello, Tower! I am your_own_name\nThe door opens!",
+        "success_msg": "The Syntax Door creaks open, revealing the path ahead. You have mastered the art of indentation!",
+        "error_hint": "Remember, in Python, indentation is the key! Make sure the print statement after the if condition is indented properly."
+    },
+
+        "Lesson 2: Variables and Data Types": {
+        "title": "THE ALCHEMIST'S LAB: GATHERING MANA",
+        "reading": "Beyond the door, you find an Alchemist’s Lab. To survive the upper floors, you must learn to store values in 'Variables'—think of them as magical pouches. In Python, variables are created the moment you assign a value. But beware! Different values have different 'Types': 'Strings' are text (wrapped in quotes), 'Integers' are whole numbers (like your health), and 'Floats' are numbers with decimals (like your precise mana levels).",
+        "challenge_objective": "The Alchemist requires you to initialize your gear. Create a variable named 'item' and set it to 'Wooden Sword'. Then, create a variable 'mana' and set it to 15.5. Finally, print both using an f-string: print(f'I have a {item} and {mana} mana.')",
+        "expected_output": "I have a Wooden Sword and 15.5 mana.",
+        "success_msg": "The Alchemist nods in approval. Your inventory is now synchronized with your magical essence!",
+        "error_hint": "Check your quotes for the 'item' string and ensure there are no quotes around the '15.5' float!"
+    },
+
+        "Lesson 3: Python Operators": {
+        "title": "THE SLIME ROOM: COMBAT CALCULATIONS",
+        "reading": "Along the way to the final gate of the floor, a glowing green Slime blocks your path! To defeat it, you must use 'Operators'. In Python, we use Arithmetic Operators to change values: '+' for addition, '-' for subtraction, and '*' for multiplication. You can also use 'Comparison Operators' like '>' (greater than) to check if your attack is strong enough to pierce the slime's core.",
+        "challenge_objective": "The Slime has 50 health. You must attack it twice! Create a variable 'slime_health' and set it to 50, and . Subtract 20 from it using the -= operator or slime_health = slime_health - 20. Then, check if the health is less than 40. Type:\nslime_health = 50\nslime_health -= 20\nprint(f'Slime health is now {slime_health}')\nif slime_health < 40:\n    print('The Slime is weakening!')",
+        "expected_output": "Slime health is now 30\nThe Slime is weakening!",
+        "success_msg": "Direct hit! The Slime wobbles and shrinks. You've mastered the logic of combat math!",
+        "error_hint": "Make sure you subtracted correctly. If you start at 50 and subtract 20, the health should be 30!"
+    },
+
+        "Lesson 4: Python If...Else": {
+        "title": "THE GUARDIAN'S GATE: CHOOSING YOUR PATH",
+        "reading": "After defeating the Slime, you stand before the final gate of the floor. A stone Guardian blocks the way. In Python, we use 'Conditional Statements' to make decisions. The 'if' statement checks a condition: if it is true, the code inside runs. You can also use 'elif' (short for else if) to check other conditions, and 'else' as a final option if nothing else matches. Remember: the code after an 'if' MUST be indented!",
+        "challenge_objective": "The Guardian asks: 'What is your power level?'\nCreate a variable 'power' and set it to 100. Write a conditional statement:\nIf power is greater than 80, print 'The Gate opens!'.\nOtherwise, print 'You are too weak.'.\n\nType:\npower = 100\nif power > 80:\n    print('The Gate opens!')\nelse:\n    print('You are too weak.')",
+        "expected_output": "The Gate opens!",
+        "success_msg": "The Guardian steps aside, impressed by your strength! You have conquered the first floor of the Tower and mastered Python Conditionals.",
+        "error_hint": "Check your indentation! The print statements must be pushed to the right. Also, don't forget the colons (:) at the end of your 'if' and 'else' lines."
+    }
+}
+
+
+
+
+
+

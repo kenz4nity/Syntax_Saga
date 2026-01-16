@@ -12,18 +12,37 @@ from tkinter import filedialog
 # This import works ONLY if this file is in the main Syntax_Saga folder
 from game_engine.adventure_engine import AdventureEngine 
 
-# --- CONFIG ---
-COLOR_BG = "#050A30"        
-COLOR_PANEL = "#84A9FF"     
-COLOR_SIDEBAR = "#000C66"
-COLOR_TEXT_BLACK = "#000000"
-COLOR_EDITOR_BG = "#1A1A1A" 
-COLOR_KEYWORD = "#FF7F50"   
-COLOR_STRING = "#98FB98"    
-COLOR_BUILTIN = "#FF00FF"
-COLOR_CHALLENGE = "#FF4444" 
+# --- FONT LOADING ---
+base_dir = os.path.dirname(os.path.abspath(__file__))
+ctk.FontManager.load_font(os.path.join(base_dir, "Inter-Regular.ttf"))
+ctk.FontManager.load_font(os.path.join(base_dir, "Inter-Bold.ttf"))
 
-ctk.set_appearance_mode("Dark")
+FONT_TITLE = ("Inter", 26)
+FONT_UI = ("Inter", 13)              
+FONT_UI_BOLD = ("Inter", 13, "bold")  
+FONT_CODE = ("Consolas", 14)         
+FONT_STORY = ("Inter", 14)
+
+# --- CONFIG ---
+# UI Core - Warm & Deep
+COLOR_BG            = "#120A2A"  # Deep Midnight Purple
+COLOR_SIDEBAR       = "#1A103D"  # Dark Grape
+COLOR_PANEL         = "#2D1B4E"  # Muted Indigo (Cards)
+COLOR_TEXT_MAIN     = "#F0E7FF"  # Soft Lavender White
+
+# Status & Interaction (Sunset Glow)
+COLOR_ACTION        = "#DD33DD"  # Hot Pink (Ready/Start)
+COLOR_COMPLETED     = "#00BBAA"  # Electric Cyan
+COLOR_LOCKED        = "#4B3B7A"  # Muted Dusty Purple
+COLOR_CHALLENGE     = "#FF8C00"  # Sunset Orange
+
+# Editor - Retro Arcade Vibe
+COLOR_EDITOR_BG     = "#23193D"  # Matches BG for seamless look
+COLOR_KEYWORD       = "#FF007F"  # Neon Rose
+COLOR_STRING        = "#FFD700"  # Gold / Amber
+COLOR_BUILTIN       = "#BD93F9"  # Soft Violet
+
+ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
 
 class SyntaxSagaApp(ctk.CTk):
@@ -42,6 +61,8 @@ class SyntaxSagaApp(ctk.CTk):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(1, weight=1)
 
+        self.sidebar_visible = True
+
         self.setup_ui()
         
         # Start at Lessons Menu
@@ -51,31 +72,52 @@ class SyntaxSagaApp(ctk.CTk):
         # TOP BAR
         self.top_bar = ctk.CTkFrame(self, height=40, corner_radius=0, fg_color=COLOR_BG)
         self.top_bar.grid(row=0, column=0, columnspan=2, sticky="ew")
+
+        self.btn_hamburger = ctk.CTkButton(
+        self.top_bar, 
+        text="☰", 
+        width=40, 
+        font=("Inter", 20),
+        fg_color="transparent", 
+        hover_color=COLOR_SIDEBAR,
+        command=self.toggle_sidebar
+        )
+        self.btn_hamburger.pack(side="left", padx=5, pady=5)
         
-        self.btn_run = ctk.CTkButton(self.top_bar, text="RUN", width=60, fg_color="transparent", hover_color=COLOR_SIDEBAR, font=("Arial", 12, "bold"), command=self.run_code_logic)
+        self.btn_run = ctk.CTkButton(self.top_bar, text="RUN", width=60, fg_color="transparent", hover_color=COLOR_SIDEBAR, font=FONT_UI_BOLD, command=self.run_code_logic)
         self.btn_run.pack(side="left", padx=10, pady=5)
 
-        self.btn_open = ctk.CTkButton(self.top_bar, text="OPEN FILE", width=80, fg_color="transparent", hover_color=COLOR_SIDEBAR, font=("Arial", 12), command=self.open_file)
+        self.btn_open = ctk.CTkButton(self.top_bar, text="OPEN FILE", width=80, fg_color="transparent", hover_color=COLOR_SIDEBAR, font=FONT_UI, command=self.open_file)
         self.btn_open.pack(side="left", padx=5, pady=5)
         
-        self.btn_save = ctk.CTkButton(self.top_bar, text="SAVE DRAFT", width=80, fg_color="transparent", hover_color=COLOR_SIDEBAR, font=("Arial", 12), command=self.save_draft)
+        self.btn_save = ctk.CTkButton(self.top_bar, text="SAVE DRAFT", width=80, fg_color="transparent", hover_color=COLOR_SIDEBAR, font=FONT_UI, command=self.save_draft)
         self.btn_save.pack(side="left", padx=5, pady=5)
         
-        self.btn_debug = ctk.CTkButton(self.top_bar, text="DEBUG", width=80, fg_color="transparent", hover_color=COLOR_SIDEBAR, font=("Arial", 12), command=self.run_debugger)
+        self.btn_debug = ctk.CTkButton(self.top_bar, text="DEBUG", width=80, fg_color="transparent", hover_color=COLOR_SIDEBAR, font=FONT_UI, command=self.run_debugger)
         self.btn_debug.pack(side="left", padx=5, pady=5)
 
         # NEXT BUTTON: Created but NOT packed. It only appears in Lessons.
-        self.btn_next = ctk.CTkButton(self.top_bar, text="NEXT >", width=80, fg_color="transparent", hover_color=COLOR_SIDEBAR, font=("Arial", 12, "bold"), command=self.load_next_lesson)
+        self.btn_next = ctk.CTkButton(self.top_bar, text="NEXT >", width=80, fg_color="transparent", hover_color=COLOR_SIDEBAR, font=FONT_UI_BOLD, command=self.load_next_lesson)
         
         # SIDEBAR
-        self.sidebar = ctk.CTkFrame(self, width=200, corner_radius=0, fg_color=COLOR_SIDEBAR)
+        self.sidebar = ctk.CTkFrame(self, width=220, corner_radius=0, fg_color=COLOR_SIDEBAR)
         self.sidebar.grid(row=1, column=0, rowspan=2, sticky="nsew")
-        self.sidebar.grid_rowconfigure(6, weight=1) 
+
+        self.sidebar_title = ctk.CTkLabel(
+            self.sidebar,
+            text="SYNTAX\nSAGA",
+            font=FONT_TITLE,
+            text_color="white"
+        )
+
+        self.sidebar_title.pack(pady=(20, 15), padx=30)
+
+        self.sidebar.grid_rowconfigure(6, weight=1)
 
         self.create_sidebar_btn("LESSONS", self.show_lessons)
         self.create_sidebar_btn("CHALLENGES", self.show_challenges)
         self.create_sidebar_btn("DRAFTS", self.show_drafts)
-        self.create_sidebar_btn("PROGRESS", self.show_progress) 
+        self.create_sidebar_btn("PROGRESS", self.show_progress)
         self.create_sidebar_btn("EDITOR / DEBUG", self.show_editor)
 
         # MAIN CONTENT
@@ -304,8 +346,18 @@ class SyntaxSagaApp(ctk.CTk):
             widget.tag_add(tag, f"1.0 + {match.start()} chars", f"1.0 + {match.end()} chars")
 
     def create_sidebar_btn(self, text, command):
-        btn = ctk.CTkButton(self.sidebar, text=text, height=40, anchor="w", fg_color="transparent", hover_color="#4B7BE5", corner_radius=0, command=command)
+        btn = ctk.CTkButton(self.sidebar, text=text, height=40, font=FONT_UI_BOLD, anchor="center", fg_color="transparent", hover_color="#4B7BE5", corner_radius=0, command=command)
         btn.pack(fill="x", pady=2)
+
+    def toggle_sidebar(self):
+        if self.sidebar_visible:
+            # Hide sidebar
+            self.sidebar.grid_forget()
+            self.sidebar_visible = False
+        else:
+            # Show sidebar
+            self.sidebar.grid(row=1, column=0, rowspan=2, sticky="nsew")
+            self.sidebar_visible = True
 
     # --- VIEWS ---
     def build_lessons_view(self):
@@ -316,10 +368,10 @@ class SyntaxSagaApp(ctk.CTk):
             card.grid(row=i//3, column=i%3, padx=10, pady=10, sticky="nsew")
             title = data.get("title", key)
             is_unlocked = (i==0) or (lessons_list[i-1][0] in completed); is_completed = (key in completed)
-            status, color, state = ("✅ COMPLETED", "#00AA00", "normal") if is_completed else ("READY", "#4B7BE5", "normal") if is_unlocked else ("LOCKED", "gray", "disabled")
-            ctk.CTkLabel(card, text=title, font=("Arial", 12, "bold"), text_color="black", wraplength=180).pack(pady=(20, 5))
-            ctk.CTkLabel(card, text=status, font=("Arial", 10), text_color="black").pack(pady=(0, 10))
-            ctk.CTkButton(card, text="START", height=30, fg_color=color, state=state, command=lambda k=key: self.load_content("lesson", k)).pack(pady=10)
+            status, color, state = ("✅ COMPLETED", COLOR_COMPLETED, "normal") if is_completed else ("READY", COLOR_ACTION, "normal") if is_unlocked else ("LOCKED", COLOR_LOCKED, "disabled")
+            ctk.CTkLabel(card, text=title, font=FONT_UI_BOLD, text_color=COLOR_TEXT_MAIN, wraplength=180).pack(pady=(20, 5))
+            ctk.CTkLabel(card, text=status, font=("Arial", 10), text_color=COLOR_TEXT_MAIN).pack(pady=(0, 10))
+            ctk.CTkButton(card, text="START", height=30, font=FONT_UI_BOLD, fg_color=color, state=state, command=lambda k=key: self.load_content("lesson", k)).pack(pady=10)
         return frame
 
     def build_challenges_view(self):
@@ -327,8 +379,9 @@ class SyntaxSagaApp(ctk.CTk):
         challenges = list(self.engine.challenges.items())
         if not challenges: ctk.CTkLabel(frame, text="No Challenges Loaded", font=("Arial", 20)).pack(pady=20); return frame
         for i, (key, data) in enumerate(challenges):
-            card = ctk.CTkFrame(frame, fg_color="#440000", border_color=COLOR_CHALLENGE, border_width=2, height=100)
+            card = ctk.CTkFrame(frame, fg_color="#440000", border_color=COLOR_CHALLENGE, border_width=2, height=50)
             card.grid(row=i, column=0, padx=20, pady=10, sticky="ew")
+            card.pack_propagate(False)
             ctk.CTkLabel(card, text=f"⚔️ {data.get('title', key)}", font=("Arial", 16, "bold"), text_color="white").pack(side="left", padx=20)
             ctk.CTkButton(card, text="ACCEPT CHALLENGE", fg_color=COLOR_CHALLENGE, hover_color="#CC0000", command=lambda k=key: self.load_content("challenge", k)).pack(side="right", padx=20)
         return frame
@@ -351,7 +404,7 @@ class SyntaxSagaApp(ctk.CTk):
             row_frame = ctk.CTkFrame(frame, fg_color="transparent")
             row_frame.pack(fill="x", pady=5, padx=20)
             btn_text = f"{draft['timestamp']} | {draft['lesson']}"
-            ctk.CTkButton(row_frame, text=btn_text, fg_color=COLOR_PANEL, text_color=COLOR_TEXT_BLACK, height=50, corner_radius=10, anchor="w", hover_color="#4B7BE5",
+            ctk.CTkButton(row_frame, text=btn_text, fg_color=COLOR_PANEL, text_color=COLOR_TEXT_MAIN, height=50, corner_radius=10, anchor="w", hover_color="#4B7BE5",
                 command=lambda c=draft['code']: self.load_draft_into_editor(c)).pack(side="left", fill="x", expand=True, padx=(0, 10))
             ctk.CTkButton(row_frame, text="DELETE", fg_color="#FF5555", width=80, height=50, corner_radius=10, hover_color="#CC0000",
                 command=lambda idx=i: self.delete_draft(idx)).pack(side="right")
@@ -370,11 +423,12 @@ class SyntaxSagaApp(ctk.CTk):
         frame = ctk.CTkFrame(self.content_area, fg_color="transparent"); frame.grid_columnconfigure((0,1), weight=1); frame.grid_rowconfigure(0, weight=3); frame.grid_rowconfigure(1, weight=1)
         self.input_box = ctk.CTkTextbox(frame, font=("Consolas", 14), fg_color=COLOR_EDITOR_BG, text_color="white", undo=True, border_color="black", border_width=2)
         self.input_box.grid(row=0, column=0, sticky="nsew", padx=5, pady=5); self.input_box._textbox.bind("<KeyRelease>", self.on_key_release)
-        self.output_box = ctk.CTkTextbox(frame, font=("Consolas", 14), fg_color=COLOR_EDITOR_BG, text_color="white"); self.output_box.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
+        self.output_box = ctk.CTkTextbox(frame, font=("Consolas", 14), fg_color=COLOR_EDITOR_BG, text_color="white", border_color="black", border_width=2); self.output_box.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
         bottom_panel = ctk.CTkFrame(frame, fg_color="#334466"); bottom_panel.grid(row=1, column=0, columnspan=2, sticky="nsew", pady=5)
         self.lbl_status = ctk.CTkLabel(bottom_panel, text="Ready", font=("Arial", 14, "bold"), anchor="w", text_color="white"); self.lbl_status.pack(fill="x", padx=10, pady=5)
         self.lbl_story = ctk.CTkTextbox(bottom_panel, fg_color="transparent", text_color="white", wrap="word", font=("Arial", 12)); self.lbl_story.pack(fill="both", expand=True, padx=10, pady=5)
         return frame
+    
 
 if __name__ == "__main__":
     app = SyntaxSagaApp()

@@ -172,10 +172,22 @@ class SyntaxSagaApp(ctk.CTk):
         self.lbl_story.configure(state="disabled")
 
     def load_next_lesson(self):
-        if self.engine.mode != "lesson": return
-        completed = self.get_completed_lessons()
-        if self.engine.current_key not in completed:
-            self.lbl_status.configure(text="🔒 Locked! Complete this lesson first.", text_color="#FF5555")
+        """Uses the engine gatekeeper to move to the next lesson"""
+        if self.engine.mode != "lesson": 
+            return
+
+        # 1. Ask the engine to move forward
+        success, message = self.engine.advance_to_next()
+        
+        if success:
+            # 2. IMPORTANT: Tell the UI to update with the NEW engine state
+            self.update_editor_instructions()  # Updates the story/mission text
+            self.input_box.delete("1.0", "end") # Clears the old code for the new lesson
+            self.output_box.delete("1.0", "end") # Clears the old output
+            self.lbl_status.configure(text="New Lesson Loaded!", text_color="white")
+        else:
+            # 3. This stays locked if syntax was wrong
+            self.lbl_status.configure(text=f"🔒 {message}", text_color="#FF5555")
             return
 
         all_keys = list(self.engine.lessons.keys())
@@ -245,18 +257,19 @@ class SyntaxSagaApp(ctk.CTk):
 
     # --- RUN LOGIC ---
     def run_code_logic(self):
-        self.show_editor() # Ensures the editor is visible
+        self.show_editor()
         user_code = self.input_box.get("1.0", "end").strip()
         
-        # This is where your new System Integrator does the heavy lifting:
         output_text, success, message = self.integrator.execute_code(user_code)
+
+        # Update engine session state based on execution result
+        self.engine.current_lesson_cleared = success 
 
         self.output_box.delete("1.0", "end")
         self.output_box.insert("end", output_text)
         
         if success:
              self.lbl_status.configure(text=f"✅ {message}", text_color="#00FF00")
-             # If it's a lesson, we still need to tell the UI to unlock the next one
              if self.engine.mode == "lesson": 
                  self.mark_lesson_complete(self.engine.current_key)
         else:
@@ -443,21 +456,15 @@ class SyntaxSagaApp(ctk.CTk):
         return frame
 
     def check_code_live(self):
-        """Real-time code analysis and execution as user types"""
         user_code = self.input_box.get("1.0", "end").strip()
-        
-        if not user_code:
-            self.lbl_status.configure(text="Ready", text_color="white")
-            self.output_box.delete("1.0", "end")
-            return
+        if not user_code: return
         
         try:
-            # Parse the code to check for syntax errors
             ast.parse(user_code)
-            self.lbl_status.configure(text="✅ Code looks valid - Auto-executing...", text_color="#00FF00")
-            
-            # Execute the code and show output in real-time
             output_text, success, message = self.integrator.execute_code(user_code)
+            
+            # Sync the engine state with the live results
+            self.engine.current_lesson_cleared = success 
             
             self.output_box.delete("1.0", "end")
             self.output_box.insert("end", output_text)
@@ -481,12 +488,12 @@ class SyntaxSagaApp(ctk.CTk):
                     error_detail += f"      {' ' * (e.offset - 1)}^\n"
             self.output_box.insert("end", error_detail)
             
-        except Exception as e:
-            self.lbl_status.configure(text=f"⚠️ Error: {str(e)}", text_color="#FF5555")
-            self.output_box.delete("1.0", "end")
-            self.output_box.insert("end", f"Error: {str(e)}")
+        except Exception:
+            pass
     
 
 if __name__ == "__main__":
     app = SyntaxSagaApp()
     app.mainloop()
+
+    

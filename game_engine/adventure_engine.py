@@ -16,6 +16,9 @@ class AdventureEngine:
         # Set default start
         if self.lessons:
             self.current_key = list(self.lessons.keys())[0]
+        
+        # Requirement Flag: Must be True to allow moving to next lesson
+        self.current_lesson_cleared = False
 
     def load_json(self, filename):
         path = os.path.join(self.base_dir, filename)
@@ -31,6 +34,7 @@ class AdventureEngine:
         """Switches between Story and Challenge mode"""
         self.mode = mode
         self.current_key = key
+        self.current_lesson_cleared = False # Lock new content by default
         print(f"ENGINE: Switched to {mode} -> {key}")
 
     def get_current_content(self):
@@ -43,6 +47,7 @@ class AdventureEngine:
             return self.challenges.get(self.current_key, {})
     
     def check_answer(self, user_output):
+        """Validates input and unlocks the gate if correct"""
         content = self.get_current_content()
         if not content: return False, "No content loaded."
 
@@ -50,6 +55,29 @@ class AdventureEngine:
         user_clean = str(user_output).strip()
         
         if user_clean == expected:
+            self.current_lesson_cleared = True  # UNLOCK the gate
             return True, content.get("success_msg", "Correct!")    
         else:
+            self.current_lesson_cleared = False # Keep it LOCKED
             return False, content.get("error_hint", "Try again.")
+    
+    def can_advance(self):
+        """Check used by UI to enable/disable the Next button"""
+        return self.current_lesson_cleared
+
+    def advance_to_next(self):
+        """Logic to move to the next lesson."""
+        if not self.current_lesson_cleared:
+            return False, "You must complete the current lesson correctly first!"
+
+        keys = list(self.lessons.keys())
+        try:
+            current_index = keys.index(self.current_key)
+            if current_index < len(keys) - 1:
+                self.current_key = keys[current_index + 1]
+                self.current_lesson_cleared = False 
+                return True, "Success"
+            else:
+                return False, "You have reached the final lesson!"
+        except ValueError:
+            return False, "Current lesson key not found."

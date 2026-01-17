@@ -83,9 +83,6 @@ class SyntaxSagaApp(ctk.CTk):
         self.btn_run = ctk.CTkButton(self.top_bar, text="RUN", width=60, fg_color="transparent", hover_color=COLOR_SIDEBAR, font=FONT_UI_BOLD, command=self.run_code_logic)
         self.btn_run.pack(side="left", padx=10, pady=5)
 
-        self.btn_open = ctk.CTkButton(self.top_bar, text="OPEN FILE", width=80, fg_color="transparent", hover_color=COLOR_SIDEBAR, font=FONT_UI, command=self.open_file)
-        self.btn_open.pack(side="left", padx=5, pady=5)
-        
         self.btn_save = ctk.CTkButton(self.top_bar, text="SAVE DRAFT", width=80, fg_color="transparent", hover_color=COLOR_SIDEBAR, font=FONT_UI, command=self.save_draft)
         self.btn_save.pack(side="left", padx=5, pady=5)
         

@@ -10,7 +10,7 @@ class SystemIntegrator:
 
     """
     The SystemIntegrator acts as the bridge between the Frontend  
-    and the Backend (AdventureEngine). It handles code execution, 
+    and the Backend. It handles code execution, 
     I/O redirection, and state management.
     """
 
@@ -46,9 +46,8 @@ class SystemIntegrator:
         """
         Captures the stdout of the user's code, runs it safely, 
         and validates it against the engine's requirements.
-        Returns: (execution_output, is_correct, system_message)
         """
-        # 1. Capture Standard Output (Print statements)
+        # 1. Capture Standard Output 
         old_stdout = sys.stdout
         redirected_output = io.StringIO()
         sys.stdout = redirected_output
@@ -56,7 +55,36 @@ class SystemIntegrator:
 
         # 2. Execute Code
         try:
-            exec(user_code, globals())
+            safe_globals = {
+                        '__builtins__': {
+                            'print': print,
+                            'len': len,
+                            'range': range,
+                            'int': int,
+                            'str': str,
+                            'float': float,
+                            'bool': bool,
+                            'list': list,
+                            'dict': dict,
+                            'tuple': tuple,
+                            'set': set,
+                            'abs': abs,
+                            'min': min,
+                            'max': max,
+                            'sum': sum,
+                            'round': round,
+                            'type': type,
+                            'isinstance': isinstance,
+                            'True': True,
+                            'False': False,
+                            'None': None,
+                        },
+                        # This allows f-strings to work
+                        '__name__': '__main__',
+                        '__doc__': None,
+                    }
+            safe_locals = {}
+            exec(user_code, safe_globals, safe_locals)
         except Exception as e:
             runtime_error = str(e)
         
@@ -85,7 +113,6 @@ class SystemIntegrator:
         
         """
         Static analysis of code to find syntax errors before running.
-        Returns: (valid_bool, message_string)
         """
         try:
             ast.parse(code_text)
@@ -98,7 +125,7 @@ class SystemIntegrator:
         except Exception as e:
             return False, f"Debugger Error: {str(e)}"
 
-    # --- DATA: PERSISTENCE (SAVE/LOAD) ---
+    # --- DATA: SAVE/LOAD ---
     def save_user_draft(self, code_content):
         """Saves current code to the drafts JSON file."""
         if not code_content.strip():

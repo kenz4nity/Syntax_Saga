@@ -5,19 +5,18 @@ class AdventureEngine:
     def __init__(self):
         self.base_dir = os.path.dirname(os.path.abspath(__file__))
         
-        # 1. Load BOTH files
+        # Load BOTH files
         self.lessons = self.load_json('adventure_content.json')
         self.challenges = self.load_json('challenges.json')
         
-        # 2. State Tracking
-        self.mode = "lesson" # Can be "lesson" or "challenge"
+        # State Tracking
+        self.mode = "lesson" # lesson or challenge
         self.current_key = None
         
         # Set default start
         if self.lessons:
             self.current_key = list(self.lessons.keys())[0]
         
-        # Requirement Flag: Must be True to allow moving to next lesson
         self.current_lesson_cleared = False
 
     def load_json(self, filename):
@@ -31,10 +30,10 @@ class AdventureEngine:
             return {}
         
     def set_mode(self, mode, key):
-        """Switches between Story and Challenge mode"""
+        #Switch between Story and Challenge mode
         self.mode = mode
         self.current_key = key
-        self.current_lesson_cleared = False # Lock new content by default
+        self.current_lesson_cleared = False
         print(f"ENGINE: Switched to {mode} -> {key}")
 
     def get_current_content(self):
@@ -55,10 +54,10 @@ class AdventureEngine:
         user_clean = str(user_output).strip()
         
         if user_clean == expected:
-            self.current_lesson_cleared = True  # UNLOCK the gate
+            self.current_lesson_cleared = True  # UNLOCK next lesson
             return True, content.get("success_msg", "Correct!")    
         else:
-            self.current_lesson_cleared = False # Keep it LOCKED
+            self.current_lesson_cleared = False
             return False, content.get("error_hint", "Try again.")
     
     def can_advance(self):

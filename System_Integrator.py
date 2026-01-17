@@ -20,7 +20,7 @@ class SystemIntegrator:
         self.drafts_file = os.path.join(self.base_dir, "user_drafts.json")
         self.progress_file = os.path.join(self.base_dir, "user_progress.json")
 
-    # --- BRIDGE: CONTENT MANAGEMENT ---
+    # --- CONTENT MANAGEMENT ---
     def load_content(self, mode, key):
         """Pass-through to engine to set state and retrieve content."""
         self.engine.set_mode(mode, key)
@@ -40,20 +40,20 @@ class SystemIntegrator:
             pass
         return None
 
-    # --- CORE: CODE EXECUTION SANDBOX ---
+    # --- CODE EXECUTION SANDBOX ---
 
     def execute_code(self, user_code):
         """
         Captures the stdout of the user's code, runs it safely, 
         and validates it against the engine's requirements.
         """
-        # 1. Capture Standard Output 
+        # Capture Standard Output 
         old_stdout = sys.stdout
         redirected_output = io.StringIO()
         sys.stdout = redirected_output
         runtime_error = None
 
-        # 2. Execute Code
+        # Execute Code
         try:
             safe_globals = {
                         '__builtins__': {
@@ -88,27 +88,27 @@ class SystemIntegrator:
         except Exception as e:
             runtime_error = str(e)
         
-        # 3. Restore Standard Output
+        # Restore Standard Output
         sys.stdout = old_stdout
         captured_output = redirected_output.getvalue()
 
-        # 4. Handle Results
+        # Handle Results
         if runtime_error:
             return f"Runtime Error:\n{runtime_error}", False, "Code Crashed"
         
         actual_output = captured_output.strip()
         
-        # 5. Check against Engine Logic
+        # Check against Engine Logic
         is_correct, message = self.engine.check_answer(actual_output)
         
-        # 6. Auto-Save Progress if successful
+        # Auto-Save Progress if successful
         if is_correct and self.engine.mode == "lesson":
             self._mark_lesson_complete(self.engine.current_key)
 
         return actual_output, is_correct, message
     
 
-    # --- UTILITY: DEBUGGER ---
+    # --- DEBUGGER ---
     def scan_syntax(self, code_text):
         
         """
@@ -125,7 +125,7 @@ class SystemIntegrator:
         except Exception as e:
             return False, f"Debugger Error: {str(e)}"
 
-    # --- DATA: SAVE/LOAD ---
+    # --- SAVE/LOAD ---
     def save_user_draft(self, code_content):
         """Saves current code to the drafts JSON file."""
         if not code_content.strip():

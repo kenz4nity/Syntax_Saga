@@ -9,10 +9,9 @@ import json
 import ast 
 from datetime import datetime
 from tkinter import filedialog
-# This import works ONLY if this file is in the main Syntax_Saga folder
 from game_engine.adventure_engine import AdventureEngine 
 
-# --- FONT LOADING ---
+# --- FONT ---
 base_dir = os.path.dirname(os.path.abspath(__file__))
 ctk.FontManager.load_font(os.path.join(base_dir, "Inter-Regular.ttf"))
 ctk.FontManager.load_font(os.path.join(base_dir, "Inter-Bold.ttf"))
@@ -24,25 +23,20 @@ FONT_CODE = ("Consolas", 14)
 FONT_STORY = ("Inter", 14)
 
 # --- CONFIG ---
-# UI Core - Warm & Deep
 COLOR_BG            = "#120A2A"  # Deep Midnight Purple
 COLOR_SIDEBAR       = "#1A103D"  # Dark Grape
 COLOR_PANEL         = "#2D1B4E"  # Muted Indigo (Cards)
 COLOR_TEXT_MAIN     = "#F0E7FF"  # Soft Lavender White
-
-# Status & Interaction (Sunset Glow)
 COLOR_ACTION        = "#DD33DD"  # Hot Pink (Ready/Start)
 COLOR_COMPLETED     = "#00BBAA"  # Electric Cyan
 COLOR_LOCKED        = "#4B3B7A"  # Muted Dusty Purple
 COLOR_CHALLENGE     = "#FF8C00"  # Sunset Orange
-
-# Editor - Retro Arcade Vibe
 COLOR_EDITOR_BG     = "#23193D"  # Matches BG for seamless look
 COLOR_KEYWORD       = "#FF007F"  # Neon Rose
 COLOR_STRING        = "#FFD700"  # Gold / Amber
 COLOR_BUILTIN       = "#BD93F9"  # Soft Violet
 
-MAX_FILE_SIZE = 1024 * 1024  # 1MB limit
+MAX_FILE_SIZE = 1024 * 1024 
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
@@ -98,20 +92,14 @@ class SyntaxSagaApp(ctk.CTk):
         self.btn_debug = ctk.CTkButton(self.top_bar, text="DEBUG", width=80, fg_color="transparent", hover_color=COLOR_SIDEBAR, font=FONT_UI, command=self.run_debugger)
         self.btn_debug.pack(side="left", padx=5, pady=5)
 
-        # NEXT BUTTON: Created but NOT packed. It only appears in Lessons.
+        # NEXT BUTTON
         self.btn_next = ctk.CTkButton(self.top_bar, text="NEXT >", width=80, fg_color="transparent", hover_color=COLOR_SIDEBAR, font=FONT_UI_BOLD, command=self.load_next_lesson)
         
         # SIDEBAR
         self.sidebar = ctk.CTkFrame(self, width=220, corner_radius=0, fg_color=COLOR_SIDEBAR)
         self.sidebar.grid(row=1, column=0, rowspan=2, sticky="nsew")
 
-        self.sidebar_title = ctk.CTkLabel(
-            self.sidebar,
-            text="SYNTAX\nSAGA",
-            font=FONT_TITLE,
-            text_color="white"
-        )
-
+        self.sidebar_title = ctk.CTkLabel(self.sidebar, text="SYNTAX\nSAGA", font=FONT_TITLE, text_color="white")
         self.sidebar_title.pack(pady=(20, 15), padx=30)
 
         self.sidebar.grid_rowconfigure(6, weight=1)
@@ -139,7 +127,6 @@ class SyntaxSagaApp(ctk.CTk):
     def load_content(self, mode, key):
         self.engine.set_mode(mode, key)
         self.show_editor() 
-        # Note: show_editor() now calls update_editor_instructions() automatically
 
     def update_editor_instructions(self):
         content = self.engine.get_current_content()
@@ -153,12 +140,10 @@ class SyntaxSagaApp(ctk.CTk):
         
         # --- DYNAMIC BUTTON LOGIC ---
         if self.engine.mode == "challenge":
-            # Boss Mode: Hide Next Button
             self.btn_next.pack_forget()
             self.lbl_status.configure(text=f"⚔️ BOSS FIGHT: {title}", text_color=COLOR_CHALLENGE)
             self.input_box.configure(border_color=COLOR_CHALLENGE, border_width=2)
         else:
-            # Lesson Mode: Show Next Button
             if not self.btn_next.winfo_ismapped():
                 self.btn_next.pack(side="right", padx=10, pady=5)
             
@@ -172,21 +157,21 @@ class SyntaxSagaApp(ctk.CTk):
         self.lbl_story.configure(state="disabled")
 
     def load_next_lesson(self):
-        """Uses the engine gatekeeper to move to the next lesson"""
+        # Uses the engine gatekeeper to move to the next lesson
         if self.engine.mode != "lesson": 
             return
 
-        # 1. Ask the engine to move forward
+        # Ask the engine to move forward
         success, message = self.engine.advance_to_next()
         
         if success:
-            # 2. IMPORTANT: Tell the UI to update with the NEW engine state
-            self.update_editor_instructions()  # Updates the story/mission text
-            self.input_box.delete("1.0", "end") # Clears the old code for the new lesson
-            self.output_box.delete("1.0", "end") # Clears the old output
+            # Tell the UI to update with the NEW engine state
+            self.update_editor_instructions() 
+            self.input_box.delete("1.0", "end") # Clears input boxx
+            self.output_box.delete("1.0", "end") # Clears ouput box
             self.lbl_status.configure(text="New Lesson Loaded!", text_color="white")
         else:
-            # 3. This stays locked if syntax was wrong
+            # stays locked if syntax was wrong
             self.lbl_status.configure(text=f"🔒 {message}", text_color="#FF5555")
             return
 
@@ -201,8 +186,7 @@ class SyntaxSagaApp(ctk.CTk):
         except: pass
 
     # --- VIEW NAVIGATION ---
-    def hide_all(self): 
-        # Always hide the NEXT button when switching views
+    def hide_all(self): #hides all views
         self.btn_next.pack_forget()
         for f in [self.frame_lessons, self.frame_challenges, self.frame_drafts, self.frame_editor, self.frame_progress]: 
             f.grid_forget()
@@ -210,7 +194,6 @@ class SyntaxSagaApp(ctk.CTk):
     def show_editor(self): 
         self.hide_all()
         self.frame_editor.grid(row=0, column=0, sticky="nsew")
-        # FIX: We MUST call this to restore the button if we are in Lesson Mode
         self.update_editor_instructions()
 
     def show_lessons(self): 
@@ -336,7 +319,7 @@ class SyntaxSagaApp(ctk.CTk):
             with open(file_path, "r", encoding='utf-8') as f:
                 self.input_box.insert("1.0", f.read())
 
-    # --- PHASE 9: DELETE LOGIC ---
+    # --- DELETE LOGIC ---
     def delete_draft(self, index):
         if not os.path.exists(self.drafts_file): return
         try:
@@ -377,11 +360,9 @@ class SyntaxSagaApp(ctk.CTk):
 
     def toggle_sidebar(self):
         if self.sidebar_visible:
-            # Hide sidebar
             self.sidebar.grid_forget()
             self.sidebar_visible = False
         else:
-            # Show sidebar
             self.sidebar.grid(row=1, column=0, rowspan=2, sticky="nsew")
             self.sidebar_visible = True
 
@@ -463,7 +444,6 @@ class SyntaxSagaApp(ctk.CTk):
             ast.parse(user_code)
             output_text, success, message = self.integrator.execute_code(user_code)
             
-            # Sync the engine state with the live results
             self.engine.current_lesson_cleared = success 
             
             self.output_box.delete("1.0", "end")
@@ -475,11 +455,10 @@ class SyntaxSagaApp(ctk.CTk):
                 self.lbl_status.configure(text=f"⚠️ {message}", text_color="#FFAA00")
                 
         except SyntaxError as e:
-            # Show syntax error
             error_msg = f"⚠️ Line {e.lineno}: {e.msg}" if e.lineno else f"⚠️ {e.msg}"
             self.lbl_status.configure(text=error_msg, text_color="#FF5555")
             
-            # Show detailed error in output box
+            # detailed error in output box
             self.output_box.delete("1.0", "end")
             error_detail = f"Syntax Error on Line {e.lineno}\n{e.msg}\n"
             if e.text:

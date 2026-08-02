@@ -1,0 +1,16 @@
+{
+    "Challenge 1: The Loop Master": {
+        "title": "Time Trial: The Infinite Loop",
+        "description": "Construct a 'while' loop that runs exactly 5 times. Inside the loop, print 'Tick'. \n\nHint: Use a counter variable starting at 0.",
+        "expected_output": "Tick\nTick\nTick\nTick\nTick",
+        "success_msg": "Time stabilizes! You have mastered the flow of time.",
+        "error_hint": "Make sure your loop runs exactly 5 times and prints 'Tick' on a new line each time."
+    },
+    "Challenge 2: The Math Wizard": {
+        "title": "Boss: The Fibonacci Gate",
+        "description": "Calculate the sum of 10 + 20 + 30 using variables. Create three variables a=10, b=20, c=30. Print the sum.",
+        "expected_output": "60",
+        "success_msg": "The gate shatters! Your math logic is undeniable.",
+        "error_hint": "Create the variables first, then print(a + b + c)."
+    }
+}
